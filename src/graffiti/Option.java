@@ -1,5 +1,6 @@
 package graffiti;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class Option<T> {
@@ -7,12 +8,9 @@ public class Option<T> {
 	private static final Option<?> EMPTY = new Option<>(null);
 
 	public static void main(String[] $){
-		Option<String> option1 = unit("A");
-		Option<String> option2 = option1.flatMap(Option::unit);
-
-		System.out.println(option1.toString());
-		System.out.println(option2.toString());
-		System.out.println(option1.toString().equals(option2.toString()));
+		Option<Integer> a = unit(10);
+		Option<Integer> b = unit(20);
+		a.flatMap(x -> b.map(y -> x + y)).ifPresent(System.out::println);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -31,11 +29,15 @@ public class Option<T> {
 	}
 
 	public <U> Option<U> map(Function<T, ? extends U> mapper) {
-		return isEmpty() ? new Option<>(mapper.apply(value)) : empty();
+		return isEmpty() ? empty() : new Option<>(mapper.apply(value));
 	}
 
 	public <U> Option<U> flatMap(Function<T, Option<U>> mapper){
 		return isEmpty() ? empty() : mapper.apply(value);
+	}
+
+	public void ifPresent(Consumer<T> action){
+		if(!isEmpty()) action.accept(value);
 	}
 
 	public boolean isEmpty(){
