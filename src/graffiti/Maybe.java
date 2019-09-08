@@ -6,22 +6,15 @@ import java.util.function.Function;
 
 public interface Maybe<T> {
 
-	public static void main(String[] $){
-		Maybe<Integer> a = unit(1);
-		Maybe<Integer> b = unit(null);
-		Maybe<Integer> r = a.flat(x -> b.bind(y -> x + y));
-		r.runBy(System.out::println);
-	}
-
 	public static <T> Maybe<T> unit(T value){
 		return value != null ? new Just<>(value) : Nothing.empty();
 	}
 
-	<U> Maybe<U> bind(Function<T, U> mapper);
+	<U> Maybe<U> bind(Function<T, U> binder);
 
-	<U> Maybe<U> flat(Function<T, Maybe<U>> mapper);
+	<U> Maybe<U> flatBind(Function<T, Maybe<U>> binder);
 
-	void runBy(Consumer<T> action);
+	void pure(Consumer<T> action);
 
 	public static class Just<T> implements Maybe<T> {
 
@@ -32,17 +25,17 @@ public interface Maybe<T> {
 		}
 
 		@Override
-		public <U> Maybe<U> bind(Function<T, U> mapper) {
-			return new Just<>(mapper.apply(value));
+		public <U> Maybe<U> bind(Function<T, U> binder) {
+			return new Just<>(binder.apply(value));
 		}
 
 		@Override
-		public <U> Maybe<U> flat(Function<T, Maybe<U>> mapper) {
-			return mapper.apply(value);
+		public <U> Maybe<U> flatBind(Function<T, Maybe<U>> binder) {
+			return binder.apply(value);
 		}
 
 		@Override
-		public void runBy(Consumer<T> action) {
+		public void pure(Consumer<T> action) {
 			action.accept(value);
 		}
 
@@ -58,17 +51,17 @@ public interface Maybe<T> {
 		}
 
 		@Override
-		public <U> Maybe<U> bind(Function<T, U> mapper) {
+		public <U> Maybe<U> bind(Function<T, U> binder) {
 			return empty();
 		}
 
 		@Override
-		public <U> Maybe<U> flat(Function<T, Maybe<U>> mapper) {
+		public <U> Maybe<U> flatBind(Function<T, Maybe<U>> binder) {
 			return empty();
 		}
 
 		@Override
-		public void runBy(Consumer<T> action) {
+		public void pure(Consumer<T> action) {
 
 		}
 

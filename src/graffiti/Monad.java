@@ -9,6 +9,10 @@ public interface Monad<T> {
 	 * μ - flat
 	 */
 
+	<U> Monad<U> unit(T value);
+
 	<U> Monad<U> map(T value, Function<T, U> mapper);
+
+	<U> Monad<U> flat(T value, Function<T, Monad<U>> mapper);
 
 }
