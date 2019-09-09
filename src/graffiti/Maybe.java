@@ -32,7 +32,7 @@ public interface Maybe<T> {
 
 		@Override
 		public <U> Maybe<U> bind(Function<T, U> binder) {
-			return new Just<>(binder.apply(value));
+			return unit(binder.apply(value));
 		}
 
 		@Override
