@@ -14,7 +14,13 @@ public interface Maybe<T> {
 
 	<U> Maybe<U> flatBind(Function<T, Maybe<U>> binder);
 
-	void pure(Consumer<T> action);
+	default Maybe<T> ifJust(Consumer<T> action){
+		return this;
+	}
+
+	default Maybe<T> ifNothing(Runnable action){
+		return this;
+	}
 
 	public static class Just<T> implements Maybe<T> {
 
@@ -35,8 +41,9 @@ public interface Maybe<T> {
 		}
 
 		@Override
-		public void pure(Consumer<T> action) {
+		public Maybe<T> ifJust(Consumer<T> action) {
 			action.accept(value);
+			return this;
 		}
 
 	}
@@ -61,8 +68,9 @@ public interface Maybe<T> {
 		}
 
 		@Override
-		public void pure(Consumer<T> action) {
-
+		public Maybe<T> ifNothing(Runnable action) {
+			action.run();
+			return this;
 		}
 
 	}
