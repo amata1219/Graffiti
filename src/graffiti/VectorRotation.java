@@ -65,10 +65,6 @@ public class VectorRotation {
 		return center.add(p.multiply(s)).add(q.multiply(t));
 	}
 
-	public static void p(ImmutableVector3d v){
-		System.out.println(v.toString());
-	}
-
 	public static class ImmutableVector3d {
 
 		public static ImmutableVector3d at(double x, double y, double z){
