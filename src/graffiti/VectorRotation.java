@@ -1,48 +1,60 @@
 package graffiti;
 
+import org.bukkit.Location;
+
 public class VectorRotation {
 
 	/*
+	 *	axisを軸にvをθだけ回転させる
+	 *
 	 *	Vec3d v, axis
-		center = dot(v, axis) * axis
-		p = v - center
-		q = cross(axis, p)
-		rotated =  center + (p * cosθ) + (q + sinθ)
+	 *	center = dot(v, axis) * axis
+	 *	p = v - center
+	 *	q = cross(axis, p)
+	 *	rotated =  center + (p * cosθ) + (q + sinθ)
+	 *
 	 */
 
-	public static final Vector3d AXIS_Y = Vector3d.at(0, 1, 0);
+	public static final ImmutableVector3d AXIS_X = ImmutableVector3d.at(1, 0, 0);
+	public static final ImmutableVector3d AXIS_Y = ImmutableVector3d.at(0, 1, 0);
+	public static final ImmutableVector3d AXIS_Z = ImmutableVector3d.at(0, 0, 1);
 
+	//Y軸を軸としてベクトルを回転させる(サンプルコード)
 	public static void main(String[] $){
 		//回転の中心となる座標
-		Vector3d center = Vector3d.at(0, 0, 0);
+		ImmutableVector3d center = ImmutableVector3d.at(0, 0, 0);
 
 		//パーティクルの初期座標
-		Vector3d particle = Vector3d.at(1, 0, 0);
+		ImmutableVector3d particle = ImmutableVector3d.at(1, 0, 0);
 
 		//中心からの相対座標
-		Vector3d relative = particle.subtract(center);
+		ImmutableVector3d relative = particle.subtract(center);
 
 		//回転後のベクトル
-		Vector3d rotated = rotate(relative, AXIS_Y, 10);
+		ImmutableVector3d rotated = rotate(relative, AXIS_Y, 10);
 
 		//回転後のパーティクル
-		Vector3d next = rotated.add(center);
+		ImmutableVector3d next = rotated.add(center);
+
+		//各成分に10^-17程度の誤差を含んでいる可能性有り(無視出来るレベル)
+		System.out.println(next.toString());
 	}
 
 	/*
 	 * @param v 回転させるベクトル
-	 * @param axis 回転の軸ベクトル(要正規化)
+	 * @param axis 軸となるベクトル(要正規化)
+	 * @param angle 回転角
 	 * @return 回転されたベクトル
 	 */
-	public static Vector3d rotate(Vector3d v, Vector3d axis, double angle){
+	public static ImmutableVector3d rotate(ImmutableVector3d v, ImmutableVector3d axis, double angle){
 		//vを軸に射影し回転円の中心を得る
-		Vector3d center = axis.multiply(v.dot(axis));
+		ImmutableVector3d center = axis.multiply(v.dot(axis));
 
 		//v - center
-		Vector3d p = v.subtract(center);
+		ImmutableVector3d p = v.subtract(center);
 
 		//軸とpに対する直交ベクトル得る
-		Vector3d q = axis.cross(p);
+		ImmutableVector3d q = axis.cross(p);
 
 		double rad = Math.toRadians(angle);
 
@@ -53,55 +65,91 @@ public class VectorRotation {
 		return center.add(p.multiply(s)).add(q.multiply(t));
 	}
 
-	public static void p(Vector3d v){
+	public static void p(ImmutableVector3d v){
 		System.out.println(v.toString());
 	}
 
-	//不変のベクトル
-	public static class Vector3d {
+	public static class ImmutableVector3d {
 
-		public static Vector3d at(double x, double y, double z){
-			return new Vector3d(x, y, z);
+		public static ImmutableVector3d at(double x, double y, double z){
+			return new ImmutableVector3d(x, y, z);
+		}
+
+		public static ImmutableVector3d at(Location loc){
+			return at(loc.getX(), loc.getY(), loc.getZ());
 		}
 
 		public final double x, y, z;
 
-		public Vector3d(double x, double y, double z){
+		public ImmutableVector3d(double x, double y, double z){
 			this.x = x;
 			this.y = y;
 			this.z = z;
 		}
 
-		public Vector3d add(Vector3d v){
-			double x = this.x + v.x;
-			double y = this.y + v.y;
-			double z = this.z + v.z;
-			return Vector3d.at(x, y, z);
+		public double magnitude(){
+			return Math.sqrt(x * x + y * y + z * z);
 		}
 
-		public Vector3d subtract(Vector3d v) {
+		public ImmutableVector3d normalize(){
+			double mag = magnitude();
+			return at(x / mag, y / mag, z / mag);
+		}
+
+		public double distance(ImmutableVector3d v){
 			double x = this.x - v.x;
 			double y = this.y - v.y;
 			double z = this.z - v.z;
-			return Vector3d.at(x, y, z);
+			return Math.sqrt(x * x + y * y + z * z);
 		}
 
-		public Vector3d multiply(double m) {
-			double x = this.x * m;
-			double y = this.y * m;
-			double z = this.z * m;
-			return Vector3d.at(x, y, z);
+		public ImmutableVector3d midpoint(ImmutableVector3d v){
+			return at((this.x + v.x) / 2, (this.y + y) / 2, (this.z + z) / 2);
 		}
 
-		public double dot(Vector3d v){
-			return this.x * v.x + this.y * v.y + this.z * v.z;
+		public ImmutableVector3d internallyDividingPoint(ImmutableVector3d v, double m, double n){
+			double denom = m + n;
+			return at((n * x + m * v.x) / denom, (n * y + m * v.y) / denom, (n * z + m * v.z) / denom);
 		}
 
-		public Vector3d cross(Vector3d v) {
-			double x = this.y * v.z - (v.y * this.z);
-			double y = this.z * v.x - (v.z * this.x);
-			double z = this.x * v.y - (v.x * this.y);
-			return Vector3d.at(x, y, z);
+		public ImmutableVector3d externallyDividingPoint(ImmutableVector3d v, double m, double n){
+			return internallyDividingPoint(v, m, -n);
+		}
+
+		public ImmutableVector3d add(ImmutableVector3d v){
+			return at(x + v.x, y + v.y, z + v.z);
+		}
+
+		public ImmutableVector3d subtract(ImmutableVector3d v) {
+			return at(x - v.x, y - v.y, z - v.z);
+		}
+
+		public ImmutableVector3d multiply(ImmutableVector3d v){
+			return at(x * v.x, y * v.y, z * v.z);
+		}
+
+		public ImmutableVector3d multiply(double m) {
+			return at(x * m, y * m, z * m);
+		}
+
+		public ImmutableVector3d divide(ImmutableVector3d v){
+			return at(x / v.x, y / v.y, z / v.z);
+		}
+
+		public ImmutableVector3d divide(double m) {
+			return at(x * m, y / m, z / m);
+		}
+
+		public double dot(ImmutableVector3d v){
+			return x * v.x + y * v.y + z * v.z;
+		}
+
+		public ImmutableVector3d cross(ImmutableVector3d v) {
+			return at(y * v.z - (v.y * z), z * v.x - (v.z * x), x * v.y - (v.x * y));
+		}
+
+		public double radians(ImmutableVector3d v){
+			return dot(v) / (magnitude() * v.magnitude());
 		}
 
 		@Override
