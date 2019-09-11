@@ -1,5 +1,7 @@
 package graffiti;
 
+import static graffiti.VectorRotation.ImmutableVector3d.*;
+
 import org.bukkit.Location;
 
 public class VectorRotation {
@@ -15,17 +17,17 @@ public class VectorRotation {
 	 *
 	 */
 
-	public static final ImmutableVector3d AXIS_X = ImmutableVector3d.at(1, 0, 0);
-	public static final ImmutableVector3d AXIS_Y = ImmutableVector3d.at(0, 1, 0);
-	public static final ImmutableVector3d AXIS_Z = ImmutableVector3d.at(0, 0, 1);
+	public static final ImmutableVector3d AXIS_X = at(1, 0, 0);
+	public static final ImmutableVector3d AXIS_Y = at(0, 1, 0);
+	public static final ImmutableVector3d AXIS_Z = at(0, 0, 1);
 
 	//Y軸を軸としてベクトルを回転させる(サンプルコード)
 	public static void main(String[] $){
 		//回転の中心となる座標
-		ImmutableVector3d center = ImmutableVector3d.at(0, 0, 0);
+		ImmutableVector3d center = at(0, 0, 0);
 
 		//パーティクルの初期座標
-		ImmutableVector3d particle = ImmutableVector3d.at(1, 0, 0);
+		ImmutableVector3d particle = at(1, 0, 0);
 
 		//中心からの相対座標
 		ImmutableVector3d relative = particle.subtract(center);
