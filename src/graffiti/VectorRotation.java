@@ -35,7 +35,7 @@ public class VectorRotation {
 		//回転後のベクトル
 		ImmutableVector3d rotated = rotate(relative, AXIS_Y, 10);
 
-		//回転後のパーティクル
+		//回転後のパーティクルの座標
 		ImmutableVector3d next = rotated.add(center);
 
 		//各成分に10^-17程度の誤差を含んでいる可能性有り(無視出来るレベル)
