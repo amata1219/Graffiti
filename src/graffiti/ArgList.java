@@ -6,12 +6,12 @@ import java.util.function.Function;
 
 import com.google.common.base.Joiner;
 
-public class Args {
+public class ArgList {
 
 	private final String[] args;
 	private int index;
 
-	public Args(String[] args){
+	public ArgList(String[] args){
 		this.args = args;
 	}
 

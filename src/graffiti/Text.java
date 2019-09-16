@@ -2,6 +2,12 @@ package graffiti;
 
 import java.util.function.Consumer;
 
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+
 public class Text {
 
 	private static final String COLORS = "0123456789AaBbCcDdEeFfKkLlMmNnOoRr";
@@ -9,6 +15,10 @@ public class Text {
 
 	public static Text of(String text){
 		return new Text(color(text));
+	}
+
+	public static Text of(String japanise, String english, Player player){
+		return new Text(color(player.getLocale().equals("ja_jp") ? japanise : english));
 	}
 
 	private static String color(String text){
@@ -50,9 +60,12 @@ public class Text {
 		action.accept(text);
 	}
 
-	@Override
-	public String toString(){
-		return text;
+	public void sendTo(CommandSender to){
+		accept(to::sendMessage);
+	}
+
+	public void actionbar(Player to){
+		accept(text -> to.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(text)));
 	}
 
 }

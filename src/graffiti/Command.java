@@ -7,10 +7,10 @@ public interface Command extends CommandExecutor {
 
 	@Override
 	default boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args){
-		onCommand(sender, args);
+		onCommand(sender, new ArgList(args));
 		return true;
 	}
 
-	void onCommand(CommandSender sender, String[] args);
+	void onCommand(CommandSender sender, ArgList args);
 
 }
