@@ -3,6 +3,8 @@ package graffiti;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public interface Maybe<T> {
 
@@ -14,9 +16,13 @@ public interface Maybe<T> {
 
 	<U> Maybe<U> flatBind(Function<T, Maybe<U>> binder);
 
+	Maybe<T> filter(Predicate<T> filter);
+
 	default Maybe<T> ifJust(Consumer<T> action){
 		return this;
 	}
+
+	void ifJustOrElse(Consumer<T> action, Supplier<T> other);
 
 	default Maybe<T> ifNothing(Runnable action){
 		return this;
@@ -41,9 +47,19 @@ public interface Maybe<T> {
 		}
 
 		@Override
+		public Maybe<T> filter(Predicate<T> filter){
+			return unit(filter.test(value) ? value : null);
+		}
+
+		@Override
 		public Maybe<T> ifJust(Consumer<T> action) {
 			action.accept(value);
 			return this;
+		}
+
+		@Override
+		public void ifJustOrElse(Consumer<T> action, Supplier<T> other){
+			ifJust(action);
 		}
 
 	}
@@ -65,6 +81,16 @@ public interface Maybe<T> {
 		@Override
 		public <U> Maybe<U> flatBind(Function<T, Maybe<U>> binder) {
 			return empty();
+		}
+
+		@Override
+		public Maybe<T> filter(Predicate<T> filter){
+			return this;
+		}
+
+		@Override
+		public void ifJustOrElse(Consumer<T> action, Supplier<T> other){
+			action.accept(other.get());
 		}
 
 		@Override
