@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.function.Function;
 import java.util.logging.Level;
 
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -95,9 +94,9 @@ public class Yaml extends YamlConfiguration {
 			plugin.getLogger().log(Level.SEVERE, "Cound not save " + file.getName() + " to " + file, ex);
 		}
 	}
-
-	public <T> Maybe<T> get(Function<Yaml, T> getter){
-		return Maybe.unit(getter.apply(this));
+	
+	public Maybe<String> getText(String path){
+		return Maybe.unit(getString(path));
 	}
 
 }
