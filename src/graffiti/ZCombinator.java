@@ -7,7 +7,11 @@ public class ZCombinator {
 	public static void main(String[] $){
 		F<F<Integer>> g = f -> n -> n <= 1 ? n : f.apply(n - 1) + f.apply(n - 2);
 		F<Integer> fib = z(g);
-		System.out.println(fib.apply(10));
+		System.out.println(fib.apply(1));
+		
+		F<F<Integer>> h = f -> n -> n <= 1 ? 1 : n * f.apply(n - 1);
+		F<Integer> fact = z(h);
+		System.out.println(fact.apply(30));
 	}
 	
 	public static <T> F<T> z(F<F<T>> f){

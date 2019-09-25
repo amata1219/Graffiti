@@ -4,11 +4,7 @@ package graffiti;
 public interface Recursable<T, R> {
 
 	public static void main(String[] args){
-		Recursable<Integer, Integer> factorial = define((n, self) -> {
-			if(n <= 1) return n;
-			else return n * self.apply(n - 1);
-		});
-
+		Recursable<Integer, Integer> factorial = define((n, self) -> n <= 1 ? n : n * self.apply(n - 1));
 		System.out.println(factorial.apply(1));
 	}
 
